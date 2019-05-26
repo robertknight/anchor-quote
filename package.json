@@ -1,0 +1,30 @@
+{
+  "name": "anchor-quote",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "approx-string-match": "^0.6.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/fast-levenshtein": "^0.0.1",
+    "@types/jsdom": "^12.2.3",
+    "@types/mocha": "^5.2.6",
+    "chai": "^4.2.0",
+    "fast-levenshtein": "^2.0.6",
+    "jsdom": "^15.1.0",
+    "mocha": "^6.1.4",
+    "prettier": "1.17.1",
+    "ts-node": "^8.0.3",
+    "typescript": "^3.4.5"
+  },
+  "files": ["lib/"],
+  "scripts": {
+    "build": "tsc",
+    "checkformatting": "prettier --check **/*.ts",
+    "format": "prettier --write **/*.ts",
+    "prepublishOnly": "yarn build",
+    "test": "mocha -r ts-node/register -r test/init.ts --extension ts"
+  }
+}
