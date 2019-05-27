@@ -25,9 +25,10 @@ This library is exploring improvements to quote anchoring in the following areas
   - Anchoring should be fast whether quotes can be located in the document or
     not. dom-anchor-text-quote relies on the diff-match-patch library which exhibits
     very poor performance in certain cases when the text is not found
-  - dom-anchor-text-quote anchors one selector at a time, with the result that
-    some work is repeated for each annotation that is anchored. This library
-    aims to support more efficient anchoring of batches of selectors
+  - Efficient anchoring of batches of selectors. dom-anchor-text-quote anchors
+    one selector at a time, with the result that some work is repeated for each
+    annotation that is anchored. This library aims to support more efficient
+    anchoring of batches of selectors
 
 ## Usage
 
