@@ -97,6 +97,17 @@ methods but not others.
 Samples of data from various highly annotated pages are available in the
 `sample-data/` directory.
 
+To fetch the current set of public annotations at a given URL and compare
+anchoring results using different methods, use the `compare-url.sh` script:
+
+```sh
+# Web page
+tools/compare-url.sh https://example.com
+
+# PDF
+tools/compare-pdf-url.sh https://somedomain.com/article.pdf
+```
+
 ## Benchmark Results
 
 Some initial results from a heavily annotated page on my 2016 MacBook Pro:
