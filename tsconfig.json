@@ -16,6 +16,8 @@
     "esModuleInterop": true
   },
   "exclude": [
-    "test"
+    "lib",
+    "test",
+    "tools"
   ]
 }
