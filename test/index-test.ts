@@ -94,15 +94,27 @@ describe("index", () => {
       assert.equal(range!.toString(), "Jill and");
     });
 
-    it("limits max errors to `maxErrors`", () => {
+    it("limits max errors to `maxErrorCount`", () => {
       const quote = { exact: "fouur sccore" };
       const html = "<div>four score and seven</div>";
       const dom = parseHtml(html);
 
-      let [range] = anchor(dom, quote, { maxErrors: 1 });
+      let [range] = anchor(dom, quote, { maxErrorCount: 1 });
       assert.isNull(range);
 
-      [range] = anchor(dom, quote, { maxErrors: 5 });
+      [range] = anchor(dom, quote, { maxErrorCount: 5 });
+      assert.ok(range);
+    });
+
+    it("limits max errors to `maxErrorRate`", () => {
+      const quote = { exact: "fouur sccore" };
+      const html = "<div>four score and seven</div>";
+      const dom = parseHtml(html);
+
+      let [range] = anchor(dom, quote, { maxErrorRate: 0.1 });
+      assert.isNull(range);
+
+      [range] = anchor(dom, quote, { maxErrorRate: 0.3 });
       assert.ok(range);
     });
 
@@ -112,7 +124,7 @@ describe("index", () => {
       const dom = parseHtml(html);
 
       const [range] = anchor(dom, quote, {
-        maxErrors: 1,
+        maxErrorCount: 1,
         normalize: ignoreCaseAndWhitespace
       });
 
@@ -126,7 +138,7 @@ describe("index", () => {
       const dom = parseHtml(html);
 
       const [range] = anchor(dom, quote, {
-        maxErrors: 1,
+        maxErrorCount: 1,
         normalize: ignoreCaseAndWhitespace
       });
 

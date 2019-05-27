@@ -5,6 +5,8 @@ import {
   rangeFromTextOffsets
 } from "./text-content";
 
+export const DEFAULT_MAX_ERROR_RATE = 0.22;
+
 export interface QuoteSelector {
   prefix?: string;
   exact: string;
@@ -19,7 +21,7 @@ export function describe(range: Range): QuoteSelector {
  * A normalized representation of an input string with mappings back to
  * the corresponding offsets in the input string.
  */
-interface NormalizedText {
+export interface NormalizedText {
   /**
    * The normalized representation of the input.
    */
@@ -32,12 +34,23 @@ interface NormalizedText {
   offsets: number[];
 }
 
-interface AnchorOptions {
+export interface AnchorOptions {
   /**
    * Maximum number of errors to allow between a normalized quote and the
    * normalized content of the DOM.
+   *
+   * If set, this supercedes `maxErrorRate`.
    */
-  maxErrors?: number;
+  maxErrorCount?: number;
+
+  /**
+   * Maximum number of errors allowed as a proportion of the quote length.
+   * For example a value of `0.2` would allow the normalized quote to differ
+   * up to 20% from the document content.
+   *
+   * Default value: `DEFAULT_MAX_ERROR_RATE`.
+   */
+  maxErrorRate?: number;
 
   /**
    * A function which converts the raw text content in the document into
@@ -118,10 +131,20 @@ export function anchor(
     // const normalizedPrefix = normalize(selector.prefix || '');
     // const normalizedSuffix = normalize(selector.suffix || '');
 
-    // TODO - Adjust default `maxErrors` to depend on pattern length.
-    const maxErrors =
-      typeof options.maxErrors === "undefined" ? 10 : options.maxErrors;
-    const matches = search(normalizedDoc.text, normalizedQuote.text, maxErrors);
+    let maxErrorCount;
+    if (typeof options.maxErrorCount !== "undefined") {
+      maxErrorCount = options.maxErrorCount;
+    } else if (typeof options.maxErrorRate !== "undefined") {
+      maxErrorCount = options.maxErrorRate * normalizedQuote.text.length;
+    } else {
+      maxErrorCount = DEFAULT_MAX_ERROR_RATE * normalizedQuote.text.length;
+    }
+
+    const matches = search(
+      normalizedDoc.text,
+      normalizedQuote.text,
+      maxErrorCount
+    );
     if (matches.length === 0) {
       return null;
     }
