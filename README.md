@@ -12,6 +12,9 @@ client](https://github.com/hypothesis/client).
 
 This library is exploring improvements in the following areas:
 
+- **Functionality**
+  - Support a more readily quantifiable definition of the amount of "fuzziness"
+    allowed when doing fuzzy matching
 - **Performance**
   - dom-anchor-text-quote relies on the diff-match-patch library which exhibits
     very poor performance in certain cases when the text is not found
