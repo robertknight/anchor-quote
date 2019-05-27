@@ -145,5 +145,13 @@ describe("index", () => {
       assert.ok(range);
       assert.equal(range!.toString(), "abcd");
     });
+
+    it.skip("finds match with best matching prefix", () => {
+      // TODO
+    });
+
+    it.skip("finds match with best matching suffix", () => {
+      // TODO
+    });
   });
 });
