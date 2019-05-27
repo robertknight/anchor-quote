@@ -140,13 +140,23 @@ export function anchor(
       maxErrorCount = DEFAULT_MAX_ERROR_RATE * normalizedQuote.text.length;
     }
 
-    const matches = search(
-      normalizedDoc.text,
-      normalizedQuote.text,
-      maxErrorCount
-    );
-    if (matches.length === 0) {
-      return null;
+    let matches;
+    const exactMatchPos = normalizedDoc.text.indexOf(normalizedQuote.text);
+    if (exactMatchPos !== -1) {
+      // Fast path for when there is an exact match.
+      matches = [
+        {
+          start: exactMatchPos,
+          end: exactMatchPos + normalizedQuote.text.length,
+          errors: 0
+        }
+      ];
+    } else {
+      // Slower path which attempts to find a match using approximate matching.
+      matches = search(normalizedDoc.text, normalizedQuote.text, maxErrorCount);
+      if (matches.length === 0) {
+        return null;
+      }
     }
 
     // Choose the match with the lowest number of errors.
