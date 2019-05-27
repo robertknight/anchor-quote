@@ -20,7 +20,9 @@
     "ts-node": "^8.0.3",
     "typescript": "^3.4.5"
   },
-  "files": ["lib/"],
+  "files": [
+    "lib/"
+  ],
   "scripts": {
     "build": "tsc",
     "checkformatting": "prettier --check **/*.ts",
