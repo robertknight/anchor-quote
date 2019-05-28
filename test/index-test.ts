@@ -146,6 +146,19 @@ describe("index", () => {
       assert.equal(range!.toString(), "abcd");
     });
 
+    it("returns correct match when quote ends before char removed during normalization", () => {
+      const quote = { exact: "fine" };
+      const html = "<div>one fine day</div>";
+      const dom = parseHtml(html);
+
+      const [range] = anchor(dom, quote, {
+        normalize: ignoreCaseAndWhitespace
+      });
+
+      assert.ok(range);
+      assert.equal(range!.toString(), "fine");
+    });
+
     it.skip("finds match with best matching prefix", () => {
       // TODO
     });

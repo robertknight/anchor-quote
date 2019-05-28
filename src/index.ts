@@ -167,8 +167,8 @@ export function anchor(
 
     // Map match back to a range in the original document.
     const srcStart = normalizedDoc.offsets[match.start];
-    const srcEnd = normalizedDoc.offsets[match.end];
-    return rangeFromTextOffsets(offsetMap, srcStart, srcEnd);
+    const srcEnd = normalizedDoc.offsets[match.end - 1];
+    return rangeFromTextOffsets(offsetMap, srcStart, srcEnd + 1);
   });
 
   return ranges;
