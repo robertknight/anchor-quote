@@ -115,6 +115,7 @@ Some initial results from a heavily annotated page on my 2016 MacBook Pro:
 ```
 ./tools/run-benchmark.ts sample-data/american-yawp-01-the-new-world.html sample-data/american-yawp-01-the-new-world.json
 Read 103494 HTML chars and 830 annotations/highlights with 453 anchorable quotes
-dom-anchor-text-quote: anchored 318, orphans 135 in 13161ms
-anchor-quote: anchored 331, orphans 122 in 3373ms
+dom-anchor-text-quote: anchored 318, orphans 135 in 13342ms
+anchor-quote: anchored 331, orphans 122 in 936ms
+Difference report written to difference-report.csv
 ```
