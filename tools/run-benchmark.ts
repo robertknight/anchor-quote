@@ -11,6 +11,9 @@
 
 import { readFileSync, writeFileSync } from "fs";
 
+// @ts-ignore
+import csvStringify from "csv-stringify/lib/sync";
+
 import { JSDOM } from "jsdom";
 import { toRange } from "dom-anchor-text-quote";
 import { get as editDistance } from "fast-levenshtein";
@@ -78,35 +81,42 @@ function compareAnchoringResults(html: string, annotations: any[]) {
   );
 
   // Compare orphans
-  let differenceReportLines = [];
+  const differenceReport = [
+    [
+      "Quote no.",
+      "Status",
+      "Quote",
+      "anchor-quote match",
+      "dom-anchor-text-quote match"
+    ]
+  ];
   for (let i = 0; i < datqRanges.length; i++) {
-    if ((datqRanges[i] == null) !== (aqRanges[i] == null)) {
-      const quote = quotes[i].exact;
-      const datqMatch = datqRanges[i] ? datqRanges[i]!.toString() : "";
-      const aqMatch = aqRanges[i] ? aqRanges[i]!.toString() : "";
-      const datqEditDistance = datqMatch ? editDistance(quote, datqMatch) : 0;
-      const aqEditDistance = aqMatch ? editDistance(quote, aqMatch) : 0;
+    const quote = quotes[i].exact.trim();
+    const datqMatch = datqRanges[i] ? datqRanges[i]!.toString().trim() : "";
+    const aqMatch = aqRanges[i] ? aqRanges[i]!.toString().trim() : "";
+    const datqEditDistance = datqMatch ? editDistance(quote, datqMatch) : 0;
+    const aqEditDistance = aqMatch ? editDistance(quote, aqMatch) : 0;
 
+    let state = null;
+
+    if (datqMatch && aqMatch && datqEditDistance !== aqEditDistance) {
+      state = "edit-distance-change";
+    }
+
+    if ((datqRanges[i] == null) !== (aqRanges[i] == null)) {
+      state = "anchor/orphan-change";
       const maxSnippetLen = 300;
       const snippet = (str: string) =>
         str.length < maxSnippetLen ? str : str.slice(0, maxSnippetLen) + "…";
+    }
 
-      differenceReportLines.push(
-        `Quote ${i} "${snippet(quote)} (${quote.length})". \
-        dom-anchor-text-quote result: "${snippet(
-          datqMatch
-        )}" (${datqEditDistance}, ${(datqEditDistance / quote.length).toFixed(
-          2
-        )}) \
-        anchor-quote result: "${snippet(aqMatch)}" (${aqEditDistance}, ${(
-          aqEditDistance / quote.length
-        ).toFixed(2)})`
-      );
+    if (state != null) {
+      differenceReport.push([i, state, quote, aqMatch, datqMatch]);
     }
   }
-  const diffReportFile = "difference-report.txt";
-  writeFileSync(diffReportFile, differenceReportLines.join("\n"));
-  console.log("Difference report written to ", diffReportFile);
+  const diffReportFile = "difference-report.csv";
+  writeFileSync(diffReportFile, csvStringify(differenceReport));
+  console.log("Difference report written to", diffReportFile);
 }
 
 const [htmlFile, annotationsFile] = process.argv.slice(2);

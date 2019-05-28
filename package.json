@@ -12,6 +12,7 @@
     "@types/jsdom": "^12.2.3",
     "@types/mocha": "^5.2.6",
     "chai": "^4.2.0",
+    "csv-stringify": "^5.3.0",
     "dom-anchor-text-quote": "^4.0.2",
     "fast-levenshtein": "^2.0.6",
     "jsdom": "^15.1.0",
