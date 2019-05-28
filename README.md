@@ -1,5 +1,7 @@
 # anchor-quote
 
+**WORK IN PROGRESS: This library is still in initial development. Use [dom-anchor-text-quote](https://github.com/tilgovi/dom-anchor-text-quote) if you want a battle-tested library.**
+
 A library for fast and error-tolerant mapping of quotes in context (eg. as used
   by the [W3C Web Annotations
   standard](https://www.w3.org/TR/annotation-model/#text-quote-selector)) to
