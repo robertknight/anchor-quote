@@ -98,10 +98,10 @@ ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
-approx-string-match@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/approx-string-match/-/approx-string-match-0.7.0.tgz#95c20f020a53312be80882721bdb2fdbf8299a43"
-  integrity sha512-TA5uSqvJZbqdwl8QD6/gA1hREsbfNJ/njyZbx99Kf7H69sWMeFcI/pDbrEBY8Li2uwbjzxBwcy+bsDVELZoq8g==
+approx-string-match@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/approx-string-match/-/approx-string-match-1.0.0.tgz#2f6b0aa0358cc332d0532611415871e5212156de"
+  integrity sha512-lsRtlmte6BQceye/U31Q/r/JNSeBzIhBQ51fd/rjE373ntJqYGuq5sSlLvxaMA35Lc7JjsnJruIJEqk6B/JLcg==
 
 arg@^4.1.0:
   version "4.1.0"
