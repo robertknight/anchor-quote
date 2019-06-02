@@ -1,4 +1,9 @@
-import { Match, default as search } from "approx-string-match";
+import {
+  Match,
+  Region,
+  multiSearch,
+  default as search
+} from "approx-string-match";
 
 import {
   createTextContentOffsetMap,
@@ -94,6 +99,36 @@ export function ignoreCaseAndWhitespace(str: string): NormalizedText {
   return { text, offsets };
 }
 
+function strToTypedArray(str: string) {
+  const buf = new Uint16Array(str.length);
+  for (let i = 0; i < str.length; i++) {
+    buf[i] = str.charCodeAt(i);
+  }
+  return buf;
+}
+
+function calcFilterRatio(textLen: number, regions: Region[]) {
+  let searchedLen = 0;
+  regions.forEach(r => (searchedLen += r.end - r.start));
+  return searchedLen / textLen;
+}
+
+function unique<T>(ary: T[]) {
+  return Array.from(new Set(ary));
+}
+
+function calcMaxErrors(textLen: number, options: AnchorOptions) {
+  let maxErrorCount;
+  if (typeof options.maxErrorCount !== "undefined") {
+    maxErrorCount = options.maxErrorCount;
+  } else if (typeof options.maxErrorRate !== "undefined") {
+    maxErrorCount = options.maxErrorRate * textLen;
+  } else {
+    maxErrorCount = DEFAULT_MAX_ERROR_RATE * textLen;
+  }
+  return maxErrorCount;
+}
+
 /**
  * Locate the closest matches for text quotes within the text of an HTML
  * element and its descendants.
@@ -119,49 +154,62 @@ export function anchor(
   const offsetMap = createTextContentOffsetMap(root);
   const normalize = options.normalize || noopNormalize;
   const normalizedDoc = normalize(offsetMap.text);
-
   // Add a dummy offset past the end of the text in case the search matches up
   // to the end of the content.
   normalizedDoc.offsets.push(offsetMap.text.length);
 
-  // Find each of the quotes within the normalized text. If a sufficiently
-  // close match is found, map it to a DOM Range.
-  const ranges = selectors.map(selector => {
-    const normalizedQuote = normalize(selector.exact);
-    // const normalizedPrefix = normalize(selector.prefix || '');
-    // const normalizedSuffix = normalize(selector.suffix || '');
+  // Apply the same normalization to quote selectors.
+  let normalizedSelectors = selectors.map((s, i) => ({
+    index: i,
+    exact: normalize(s.exact).text
+  }));
 
-    let maxErrorCount;
-    if (typeof options.maxErrorCount !== "undefined") {
-      maxErrorCount = options.maxErrorCount;
-    } else if (typeof options.maxErrorRate !== "undefined") {
-      maxErrorCount = options.maxErrorRate * normalizedQuote.text.length;
-    } else {
-      maxErrorCount = DEFAULT_MAX_ERROR_RATE * normalizedQuote.text.length;
-    }
+  let matches: Array<Match[]> = [];
 
-    let matches;
-    const exactMatchPos = normalizedDoc.text.indexOf(normalizedQuote.text);
+  // Fast path: Search for exact matches.
+  normalizedSelectors.forEach((selector, i) => {
+    const exactMatchPos = normalizedDoc.text.indexOf(selector.exact);
     if (exactMatchPos !== -1) {
-      // Fast path for when there is an exact match.
-      matches = [
+      matches[selector.index] = [
         {
           start: exactMatchPos,
-          end: exactMatchPos + normalizedQuote.text.length,
+          end: exactMatchPos + selector.exact.length,
           errors: 0
         }
       ];
-    } else {
-      // Slower path which attempts to find a match using approximate matching.
-      matches = search(normalizedDoc.text, normalizedQuote.text, maxErrorCount);
-      if (matches.length === 0) {
-        return null;
-      }
     }
+  });
 
+  // Slow path: Search for approximate matches for remaining quotes.
+  //
+  // Quotes are grouped into small batches by length and then passed to
+  // `multiSearch`, which optimizes searching for multiple patterns at once
+  // by first filtering out regions of the text which contain no matches.
+  normalizedSelectors = normalizedSelectors.filter(
+    s => matches[s.index] == null
+  );
+  normalizedSelectors.sort((a, b) => a.exact.length - b.exact.length);
+  const groupSize = 5;
+  for (let i = 0; i < normalizedSelectors.length; i += groupSize) {
+    const group = normalizedSelectors.slice(i, i + groupSize);
+    const patterns = group.map(selector => ({
+      pattern: selector.exact,
+      maxErrors: calcMaxErrors(selector.exact.length, options)
+    }));
+    const groupMatches = multiSearch(normalizedDoc.text, patterns);
+    groupMatches.forEach((m, i) => {
+      matches[group[i].index] = m;
+    });
+  }
+
+  // Select the best matches for each quote and map them to DOM ranges.
+  const ranges = matches.map(selectorMatches => {
+    if (selectorMatches.length == 0) {
+      return null;
+    }
     // Choose the match with the lowest number of errors.
     // TODO - Take into account prefix and suffix match closeness.
-    const sorted = [...matches];
+    const sorted = [...selectorMatches];
     sorted.sort((a, b) => a.errors - b.errors);
     const match = sorted[0];
 
