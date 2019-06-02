@@ -85,7 +85,7 @@ export function ignoreCaseAndWhitespace(str: string): NormalizedText {
   let text = "";
   const offsets = [];
   for (let i = 0; i < strLower.length; i++) {
-    if (strLower[i] !== " ") {
+    if (!/\s/.test(strLower[i])) {
       text += strLower[i];
       offsets.push(i);
     }
