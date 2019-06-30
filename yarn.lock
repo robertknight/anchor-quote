@@ -99,9 +99,9 @@ ansi-styles@^3.2.1:
     color-convert "^1.9.0"
 
 approx-string-match@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/approx-string-match/-/approx-string-match-1.0.0.tgz#2f6b0aa0358cc332d0532611415871e5212156de"
-  integrity sha512-lsRtlmte6BQceye/U31Q/r/JNSeBzIhBQ51fd/rjE373ntJqYGuq5sSlLvxaMA35Lc7JjsnJruIJEqk6B/JLcg==
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/approx-string-match/-/approx-string-match-1.1.0.tgz#2fb8e1d6dcb640acc1c0d1ae9f0895348d06f4c0"
+  integrity sha512-j1yQB9XhfGWsvTfHEuNsR/SrUT4XQDkAc0PEjMifyi97931LmNQyLsO6HbuvZ3HeMx+3Dvk8m8XGkUF+8lCeqw==
 
 arg@^4.1.0:
   version "4.1.0"
